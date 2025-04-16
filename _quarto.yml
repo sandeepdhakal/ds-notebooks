@@ -1,0 +1,23 @@
+project:
+  type: website
+  render:
+    - "*.qmd"
+    - "notebooks/*.ipynb"
+    - "!notebooks/*.py"
+  output-dir: _site
+
+website:
+  title: "Sandeep Dhakal's Jupyter notebooks"
+  navbar:
+    background: secondary
+format:
+  html:
+    theme: 
+      light: [yeti]
+      dark: [darkly]
+    toc: true
+    fontsize: 0.9em
+    code-copy: true
+    lightbox: true
+
+highlight-style: nord

@@ -1,0 +1,10 @@
+---
+listing:
+  contents: notebooks
+  sort: "date desc"
+  type: default
+  categories: true
+title-block-banner: false
+sidebar: false
+page-layout: full
+---
