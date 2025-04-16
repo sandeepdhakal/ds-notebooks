@@ -44,4 +44,4 @@ dependencies = [
 "*.ipynb" = ["E402"]
 
 # Pair ipynb notebooks to py:percent text notebooks
-formats = "ipynb,qmd"
+formats = "ipynb,py:percent"
