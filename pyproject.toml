@@ -40,8 +40,12 @@ dependencies = [
     "vegafusion[embed]>=2.0.2",
 ]
 
+[tool.ruff.lint]
+select = ["I"]
+
 [tool.ruff.lint.per-file-ignores]
 "*.ipynb" = ["E402"]
 
 # Pair ipynb notebooks to py:percent text notebooks
-formats = "ipynb,py:percent"
+# [tool.jupytext]
+# formats = "ipynb,py:percent"
