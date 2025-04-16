@@ -1,0 +1,23 @@
+[
+  {
+    "objectID": "notebooks/brisbane-suburbs-mean-elevation.html",
+    "href": "notebooks/brisbane-suburbs-mean-elevation.html",
+    "title": "Zonal statistics: mean elevation of brisbane suburbs",
+    "section": "",
+    "text": "As part of my geospatial analysis journey and the mapping of various things in Brisbane, in this notebook I will look at the digital elevation data of Brisbane suburbs.\nI will tackle this as two sequential tasks:"
+  },
+  {
+    "objectID": "notebooks/brisbane-suburbs-mean-elevation.html#clipping-to-brisbanes-geometry",
+    "href": "notebooks/brisbane-suburbs-mean-elevation.html#clipping-to-brisbanes-geometry",
+    "title": "Zonal statistics: mean elevation of brisbane suburbs",
+    "section": "Clipping to Brisbane’s geometry",
+    "text": "Clipping to Brisbane’s geometry\nNotice that since we only used the 4 geographical bounds to download the raster data, we will further need to mask it to Brisbane’s geographic boundary. We can get the mask using the dissolve method from geopandas. Let’s also filter by elevation above 0 meters, so we can focus on the land area.\n\n# shapely Polygon  to clip raster\n# use shapely polygon in clip method of rioxarray object to clip raster\ndem = dem.rio.clip(suburbs.dissolve().geometry)\n\n# while plotting, lets only show elevation higher than 0 metres above sea-level.\ndem.where(dem &gt; 0).plot(cmap=\"terrain\")\n\n\n\n\n\n\n\n\nWe can clearly see that most parts of Brisbane are low lying (under 100 metres above sea level) with north-western parts (such as England Creek, Lake Manchester, Mount Coot-tha, Enoggera Reservoir) with higher elevation.\nWe can also clip the data around the apparently low-lying parts to see the minute variations in elevation throughout the city, and the difference between the north-eastern and southern parts of the city.\n\nfrom shapely import Polygon\n\ntest_poly = [\n    Polygon(((152.975, -27.3), (152.975, -27.65), (153.2, -27.65), (153.2, -27.3)))\n]\nclipped_dem = dem.rio.clip(test_poly)\n\nfig, ax = plt.subplots()\nclipped_dem.where(clipped_dem &gt; 0).plot(cmap=\"terrain\", ax=ax)\nax.xaxis.set_major_locator(plt.MaxNLocator(5))\nplt.show()"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Sandeep Dhakal's Jupyter notebooks",
+    "section": "",
+    "text": "Zonal statistics: mean elevation of brisbane suburbs\n\n\n\n\n\n\nGIS\n\n\nDEM\n\n\n\n\n\n\n\n\n\nApr 15, 2025\n\n\n\n\n\n\nNo matching items"
+  }
+]
