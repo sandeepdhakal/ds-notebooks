@@ -19,5 +19,4 @@ format:
     fontsize: 0.9em
     code-copy: true
     lightbox: true
-
-highlight-style: nord
+highlight-style: dracula
