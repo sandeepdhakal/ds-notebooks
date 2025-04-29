@@ -60,7 +60,7 @@
     "href": "index.html",
     "title": "Sandeep Dhakal's Jupyter notebooks",
     "section": "",
-    "text": "Animated scatter plot with size legend with matplotlib\n\n\n\n\n\n\nanimation\n\n\nmatplotlib\n\n\n\n\n\n\n\n\n\nApr 17, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nZonal statistics: mean elevation of brisbane suburbs\n\n\n\n\n\n\nGIS\n\n\nDEM\n\n\n\n\n\n\n\n\n\nApr 15, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nVisualising preference flows in 2024 QLD state elections\n\n\n\n\n\n\nsankey\n\n\nelections\n\n\n\n\n\n\n\n\n\nMar 10, 2025\n\n\n\n\n\n\nNo matching items"
+    "text": "Spatial KDE plots in Python\n\n\n\n\n\n\nGIS\n\n\n\n\n\n\n\n\n\nApr 28, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nAnimated scatter plot with size legend with matplotlib\n\n\n\n\n\n\nanimation\n\n\nmatplotlib\n\n\n\n\n\n\n\n\n\nApr 17, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nZonal statistics: mean elevation of brisbane suburbs\n\n\n\n\n\n\nGIS\n\n\nDEM\n\n\n\n\n\n\n\n\n\nApr 15, 2025\n\n\n\n\n\n\n\n\n\n\n\n\nVisualising preference flows in 2024 QLD state elections\n\n\n\n\n\n\nsankey\n\n\nelections\n\n\n\n\n\n\n\n\n\nMar 10, 2025\n\n\n\n\n\n\nNo matching items"
   },
   {
     "objectID": "notebooks/brisbane-suburbs-mean-elevation.html",
@@ -75,5 +75,33 @@
     "title": "Zonal statistics: mean elevation of brisbane suburbs",
     "section": "Clipping to Brisbane’s geometry",
     "text": "Clipping to Brisbane’s geometry\nNotice that since we only used the 4 geographical bounds to download the raster data, we will further need to mask it to Brisbane’s geographic boundary. We can get the mask using the dissolve method from geopandas. Let’s also filter by elevation above 0 meters, so we can focus on the land area.\n\n# shapely Polygon  to clip raster\n# use shapely polygon in clip method of rioxarray object to clip raster\ndem = dem.rio.clip(suburbs.dissolve().geometry)\n\n# while plotting, lets only show elevation higher than 0 metres above sea-level.\ndem.where(dem &gt; 0).plot(cmap=\"terrain\")\n\n\n\n\n\n\n\n\nWe can clearly see that most parts of Brisbane are low lying (under 100 metres above sea level) with north-western parts (such as England Creek, Lake Manchester, Mount Coot-tha, Enoggera Reservoir) with higher elevation.\nWe can also clip the data around the apparently low-lying parts to see the minute variations in elevation throughout the city, and the difference between the north-eastern and southern parts of the city.\n\nfrom shapely import Polygon\n\ntest_poly = [\n    Polygon(((152.975, -27.3), (152.975, -27.65), (153.2, -27.65), (153.2, -27.3)))\n]\nclipped_dem = dem.rio.clip(test_poly)\n\nfig, ax = plt.subplots()\nclipped_dem.where(clipped_dem &gt; 0).plot(cmap=\"terrain\", ax=ax)\nax.xaxis.set_major_locator(plt.MaxNLocator(5))\nplt.show()"
+  },
+  {
+    "objectID": "notebooks/spatial-kde-plot.html",
+    "href": "notebooks/spatial-kde-plot.html",
+    "title": "Spatial KDE plots in Python",
+    "section": "",
+    "text": "I frequently use KDE plots for my work, but I have not previously used them for spatial analysis. I found a really cool example here using the geoplot Python library. geoplot uses Seaborn behind the scenes to generate the KDE plots.\nUnfortunately, geoplot didn’t work for me and I set about finding my own solution. In this post, I explain how I acheived that."
+  },
+  {
+    "objectID": "notebooks/spatial-kde-plot.html#getting-individual-contour-regions",
+    "href": "notebooks/spatial-kde-plot.html#getting-individual-contour-regions",
+    "title": "Spatial KDE plots in Python",
+    "section": "Getting individual contour regions",
+    "text": "Getting individual contour regions\nSeaborn’s kdeplot returns a collection of children, including a QuadContourSet instance that contains information about the contour and contour regions.\n\nkde = sns.kdeplot(fatal_crashes, x=fatal_crashes.geometry.x, y=fatal_crashes.geometry.y, weights='Count_Casualty_Fatality', cmap='viridis')\n\n\n\n\n\n\n\n\n\nimport pprint\n\npprint.pp(kde.get_children())\n\n[&lt;matplotlib.contour.QuadContourSet object at 0x7fe103723800&gt;,\n &lt;matplotlib.spines.Spine object at 0x7fe10353c920&gt;,\n &lt;matplotlib.spines.Spine object at 0x7fe10353e750&gt;,\n &lt;matplotlib.spines.Spine object at 0x7fe10357ea80&gt;,\n &lt;matplotlib.spines.Spine object at 0x7fe10357ee70&gt;,\n &lt;matplotlib.axis.XAxis object at 0x7fe103a38500&gt;,\n &lt;matplotlib.axis.YAxis object at 0x7fe10357f080&gt;,\n Text(0.5, 1.0, ''),\n Text(0.0, 1.0, ''),\n Text(1.0, 1.0, ''),\n &lt;matplotlib.patches.Rectangle object at 0x7fe103723f20&gt;]"
+  },
+  {
+    "objectID": "notebooks/spatial-kde-plot.html#clipping-contour-regions-to-boundaries",
+    "href": "notebooks/spatial-kde-plot.html#clipping-contour-regions-to-boundaries",
+    "title": "Spatial KDE plots in Python",
+    "section": "Clipping contour regions to boundaries",
+    "text": "Clipping contour regions to boundaries\nAnd each QuadCountourSet instance is a collection of contour paths, which we can access with the get_paths method. We can generate a shapely Polygon using the to_polygons method.\n\n# credit to https://towardsdatascience.com/from-kernel-density-estimation-to-spatial-analysis-in-python-64ddcdb6bc9b/\n\nfrom shapely import Polygon\nfrom matplotlib.contour import QuadContourSet\n\ncontour_set = None\nfor i in kde.get_children():\n    if type(i) is QuadContourSet:\n        contour_set = i\n        break\n\ncontour_paths = []\n# Loop through all contours\nfor contour in contour_set.get_paths(): \n    # Create a polygon for the countour\n    # First polygon is the main countour, the rest are holes\n    for ncp,cp in enumerate(contour.to_polygons()):\n        x = cp[:,0]\n        y = cp[:,1]\n        new_shape = Polygon([(i[0], i[1]) for i in zip(x,y)])\n        if ncp == 0:\n            poly = new_shape\n        else:\n            # Remove holes, if any\n            poly = poly.difference(new_shape)\n\n    # Append polygon to list\n    contour_paths.append(poly)\n\n# make holes corresponding to the inner contours\ncontour_polys = [contour_paths[i].difference(contour_paths[i+1]) for i in range(len(contour_paths)-2)] + [contour_paths[-1]]\n\ndf = pd.DataFrame(zip(contour_set.levels, contour_polys), columns=['level', 'geometry'])\ngdf = gpd.GeoDataFrame(df, crs=brisbane.crs)\n\nclipped_kde_gdf = gdf.clip(brisbane)\n\nNow, if we plot clipped_kde_gdf, we can see that the contour has been nicely clipped to Brisbane’s boundaries.\n\nclipped_kde_gdf.plot()"
+  },
+  {
+    "objectID": "notebooks/spatial-kde-plot.html#final-plot",
+    "href": "notebooks/spatial-kde-plot.html#final-plot",
+    "title": "Spatial KDE plots in Python",
+    "section": "Final plot",
+    "text": "Final plot\nFinally, we can plot the complete plot, this time with some background tiles.\n\nimport contextily as cx\n\nfig, ax = plt.subplots()\nbrisbane.boundary.plot(ax=ax, edgecolor='black', linewidth=0.5)\ncx.add_basemap(ax, crs=brisbane.crs, source=cx.providers.CartoDB.Voyager)\nclipped_kde_gdf.plot('level', ax=ax, cmap='viridis', alpha=0.7)\nax.set(xlabel='', ylabel='')\nplt.show()"
   }
 ]
