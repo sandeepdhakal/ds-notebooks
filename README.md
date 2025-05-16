@@ -1,5 +1,9 @@
 This is a collection of my data science/analysis/visualisation notebooks.
 
+## Merging adjancet ploygons based on attribute in a large GIS dataset
+Using *PostGIS* to efficiently merge adjacent polygons based on attribute in a large dataset with
+>750k rows. [link](https://sandeepdhakal.github.io/notebooks/notebooks/merging-adjacent-polygons-on-attribute.html)
+
 ## Spatial KDE Plot
 Generating spatial KDE plots using *Seaborn*, *Matplotlib* and *Geopandas*. [Link](https://sandeepdhakal.github.io/notebooks/notebooks/spatial-kde-plot.html)
 
